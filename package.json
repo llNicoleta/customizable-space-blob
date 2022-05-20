@@ -22,6 +22,7 @@
     "@types/three": "^0.140.0",
     "dat.gui": "^0.7.9",
     "rxjs": "~7.4.0",
+    "simplex-noise": "^3.0.1",
     "three": "^0.140.2",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"
