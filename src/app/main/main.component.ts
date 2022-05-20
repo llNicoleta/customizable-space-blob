@@ -18,9 +18,37 @@ export class MainComponent implements AfterViewInit {
    *  TEXTURES
    */
   textureLoader = new THREE.TextureLoader();
-  sphereTexture = this.textureLoader.load('assets/background/sphere');
-  nucleusTexture = this.textureLoader.load('assets/background/nucleus.jpeg')
+  sphereTexture0 = this.textureLoader.load('assets/background/sphere0');
+  blobTexture0 = this.textureLoader.load('assets/background/nucleus0.jpeg');
+  sphereTexture1 = this.textureLoader.load('assets/background/sphere1');
+  blobTexture1 = this.textureLoader.load('assets/background/nucleus1');
+  sphereTexture2 = this.textureLoader.load('assets/background/sphere2');
+  blobTexture2 = this.textureLoader.load('assets/background/nucleus2');
 
+
+  /**
+   *  ENVIRONMENTS
+   */
+  environments = [
+    {
+      index: 0,
+      sphere: this.sphereTexture0,
+      blob: this.blobTexture0
+    },
+    {
+      index: 1,
+      sphere: this.sphereTexture1,
+      blob: this.blobTexture1
+    },
+    {
+      index: 2,
+      sphere: this.sphereTexture2,
+      blob: this.blobTexture2
+    }
+  ]
+
+  currentEnvIndex = 0;
+  currentEnvironment = this.environments[this.currentEnvIndex];
 
   /**
    *  SCENE
@@ -30,7 +58,7 @@ export class MainComponent implements AfterViewInit {
   /**
    *  CAMERA
    */
-  cameraZ: number = 30;
+  cameraZ: number = 10;
   fov: number = 55;
   nearClippingPlane: number = 0.1;
   farClippingPlane: number = 1000;
@@ -60,13 +88,13 @@ export class MainComponent implements AfterViewInit {
    *  OBJECTS
    */
   icosahedronGeometry = new THREE.IcosahedronBufferGeometry(30, 10);
-  lambertMaterial = new THREE.MeshPhongMaterial({map: this.nucleusTexture});
+  lambertMaterial = new THREE.MeshPhongMaterial({map: this.currentEnvironment.blob});
   blob = new THREE.Mesh(this.icosahedronGeometry, this.lambertMaterial);
 
-  geometrySphereBg = new THREE.SphereBufferGeometry(10, 40, 40);
+  geometrySphereBg = new THREE.SphereBufferGeometry(5, 40, 40);
   materialSphereBg = new THREE.MeshBasicMaterial({
     side: THREE.BackSide,
-    map: this.sphereTexture
+    map: this.currentEnvironment.sphere
   });
   sphereBg = new THREE.Mesh(this.geometrySphereBg, this.materialSphereBg);
 
@@ -80,6 +108,9 @@ export class MainComponent implements AfterViewInit {
    *  NOISE
    */
   noise = new SimplexNoise();
+  private animate: boolean = true;
+
+  fullscreen = false;
 
   constructor() {
   }
@@ -125,8 +156,8 @@ export class MainComponent implements AfterViewInit {
   }
 
   createScene() {
-    this.sphereTexture.anisotropy = 16;
-    this.nucleusTexture.anisotropy = 16;
+    this.sphereTexture0.anisotropy = 16;
+    this.blobTexture0.anisotropy = 16;
     this.icosahedronGeometry.setAttribute("basePosition", this.blob.geometry.getAttribute('position'));
     this.scene = new THREE.Scene();
     this.scene.add(this.sphereBg);
@@ -160,7 +191,8 @@ export class MainComponent implements AfterViewInit {
     this.renderer.setSize(this.width, this.height);
     const component = this;
     (function render() {
-      component.animateBlob();
+      if (component.animate)
+        component.animateBlob();
       component.controls.update();
       component.renderer.render(component.scene, component.camera);
       requestAnimationFrame(render);
@@ -221,4 +253,43 @@ export class MainComponent implements AfterViewInit {
     return new THREE.Vector3(dx, dy, dz);
   }
 
+  onKeyPress(e: KeyboardEvent) {
+    switch (e.code) {
+      case 'KeyZ':
+        this.blob.material.color.set(new THREE.Color(MainComponent.generateColor()));
+        break
+      case 'KeyX':
+        this.blob.material.color.set(new THREE.Color());
+        break
+      case 'Space':
+        this.animate = !this.animate;
+        this.controls.autoRotate = !this.controls.autoRotate;
+        break
+      case 'ArrowRight':
+        this.currentEnvIndex = (this.currentEnvIndex + 1) % 3;
+        this.currentEnvironment = this.environments.filter(env => env.index === this.currentEnvIndex)[0];
+        this.blob.material.map = this.currentEnvironment.blob;
+        this.sphereBg.material.map = this.currentEnvironment.sphere;
+        break
+      case 'ArrowLeft':
+        if (this.currentEnvIndex === 0)
+          this.currentEnvIndex = 3;
+        this.currentEnvIndex = (this.currentEnvIndex - 1) % 3;
+        this.currentEnvironment = this.environments.filter(env => env.index === this.currentEnvIndex)[0];
+        this.blob.material.map = this.currentEnvironment.blob;
+        this.sphereBg.material.map = this.currentEnvironment.sphere;
+        break
+    }
+  }
+
+  private static generateColor() {
+    return "#" + Math.random().toString(16).slice(2, 8)
+  }
+
+  toggleFullscreen() {
+    if (!this.fullscreen) {
+      document.documentElement.requestFullscreen().then();
+    } else document.exitFullscreen().then();
+    this.fullscreen = !this.fullscreen;
+  }
 }

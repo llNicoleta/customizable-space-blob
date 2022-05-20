@@ -1,5 +1,22 @@
 <canvas
+  contenteditable="true"
+  (dblclick)="toggleFullscreen()"
+  (keydown)="onKeyPress($event)"
   (window:resize)="onResize($event)"
   #canvas
   id="canvas"
   style="width: 100%; height: 100%;"></canvas>
+
+<div class="instructions">
+  <h3>INSTRUCTIONS</h3>
+  <div class="instructions-list">
+    <p><strong>DRAG on blob</strong> - change the blob's position;</p>
+    <p><strong>DRAG outside blob</strong> - change the camera's position;</p>
+    <p><strong>Scroll</strong> - zoom in and out;</p>
+    <p><strong>Double click</strong> - go fullscreen;</p>
+    <p><strong>Z</strong> - change the blob's color</p>
+    <p><strong>X</strong> - reset the blob's color;</p>
+    <p><strong><- or -></strong> - change environment;</p>
+    <p><strong>Space</strong> - toggle animation;</p>
+  </div>
+</div>

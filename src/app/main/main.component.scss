@@ -1,0 +1,22 @@
+canvas {
+  outline: none;
+  cursor: default !important;
+}
+
+.instructions {
+  user-select: none;
+  position: absolute;
+  bottom: 20px;
+  left: 25px;
+  color: white;
+  cursor: default;
+  font-family: ".SF NS Mono", sans-serif;
+
+  & > p {
+    margin: 0.3rem 0;
+  }
+}
+
+.instructions-list {
+  display: flex;
+}
