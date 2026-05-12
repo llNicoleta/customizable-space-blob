@@ -1,12 +1,13 @@
 import {AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core';
 import * as THREE from 'three';
 import * as dat from "dat.gui";
-import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
-import {DragControls} from "three/examples/jsm/controls/DragControls";
+import {OrbitControls} from "three/examples/jsm/controls/OrbitControls.js";
+import {DragControls} from "three/examples/jsm/controls/DragControls.js";
 import SimplexNoise from "simplex-noise";
 
 @Component({
   selector: 'app-main',
+  standalone: true,
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.scss']
 })
